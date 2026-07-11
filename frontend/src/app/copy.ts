@@ -9,6 +9,13 @@ export const copy = {
     operationsPulse: "Operations pulse",
     locale: "AR",
     theme: "Theme",
+    navGroups: {
+      access: "Access",
+      people: "People",
+      finance: "Finance",
+      operations: "Operations",
+      system: "System",
+    },
   },
   ar: {
     brand: "نظام ERP المؤسسي",
@@ -20,5 +27,12 @@ export const copy = {
     operationsPulse: "نبض العمليات",
     locale: "EN",
     theme: "المظهر",
+    navGroups: {
+      access: "الوصول",
+      people: "الموظفون",
+      finance: "المالية",
+      operations: "العمليات",
+      system: "النظام",
+    },
   },
 } as const;
