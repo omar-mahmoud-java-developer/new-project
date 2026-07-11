@@ -60,6 +60,7 @@ Group labels need EN/AR entries added to `copy.ts` (e.g. `navGroups: { access: "
 - `frontend/src/pages/OverviewPage.tsx` — restyle cards/panels to new palette and radius.
 - `frontend/src/app/navigation.ts` — restructure to grouped array.
 - `frontend/src/app/copy.ts` — add `navGroups` translations (EN/AR).
+- `frontend/src/components/BrandMark.tsx`, `ModeSwitch.tsx`, `LocaleSwitch.tsx` — restyle to new palette/radius (styling only, no behavior change, per "Out of scope" above).
 
 ## Testing / verification
 
