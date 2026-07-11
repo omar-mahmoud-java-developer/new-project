@@ -19,7 +19,15 @@ This file is read automatically at the start of every Claude Code session in thi
 - Decided approach: build one module/sub-project at a time via brainstorm → spec → plan → implement cycle (superpowers skill flow), starting with the frontend shell itself before any business module.
 - Ran brainstorming session (with visual companion) for **sub-project 1: shell UI restyle**. Decisions locked: dark high-contrast palette (zinc/black + emerald, replacing blue/glass), 10px corner radius (down from 28px), keep Manrope font, group sidebar nav into sections (Access / People / Finance / Operations / System).
 - Design spec written and committed: `docs/superpowers/specs/2026-07-11-shell-ui-restyle-design.md`.
-- **Next step**: user reviewing the spec. Once approved, invoke `writing-plans` skill to turn it into an implementation plan, then implement (touches `tailwind.config.ts`, `global.css`, `AppShell.tsx`, `OverviewPage.tsx`, `navigation.ts`, `copy.ts`).
+- Implementation plan written and committed: `docs/superpowers/plans/2026-07-11-shell-ui-restyle.md` (6 tasks).
+- Created branch `v1` off `main` for implementation.
+
+### 2026-07-12
+
+- Executed the shell-restyle plan via subagent-driven-development (fresh implementer + reviewer subagent per task, all 6 tasks approved clean on first or near-first review). Commits on `v1`: `a17dc00` (Tailwind tokens/global CSS) → `09b4453` (grouped nav data + EN/AR translations) → `a983543` (AppShell restyle + grouped nav rendering) → `e4d264a` (OverviewPage restyle) → `e40d933` (BrandMark/ModeSwitch/LocaleSwitch restyle).
+- Verified end-to-end with a headless-Chromium script (Playwright, no project run-skill existed yet for this app): `npm run check` green, zero console errors, screenshots confirm dark AND light modes now both render correctly (previously light mode was visually a no-op — the old hardcoded gradient background ignored the theme toggle; this is now fixed as a side effect of switching to `dark:`-variant Tailwind classes), RTL/AR grouped nav labels correct, mobile viewport stacks correctly.
+- Shell UI restyle sub-project is implementation-complete on branch `v1`, pending final whole-branch code review, then `finishing-a-development-branch` (merge/PR decision — not yet done, needs user).
+- **Next step**: run final whole-branch review on `v1`, then ask the user how to integrate (merge to `main` / PR / keep as-is) via `finishing-a-development-branch`. After that, pick sub-project 2 — the next ERP module (e.g. Authentication) — and repeat the brainstorm → spec → plan → implement cycle.
 
 ## Conventions
 
