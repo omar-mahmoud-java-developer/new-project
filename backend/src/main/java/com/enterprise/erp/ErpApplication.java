@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2026 Enterprise ERP
+ */
 package com.enterprise.erp;
 
 import org.springframework.boot.SpringApplication;

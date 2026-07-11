@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2026 Enterprise ERP
+ */
 package com.enterprise.erp.config;
 
 import java.time.Instant;
@@ -22,9 +25,13 @@ public class HealthController {
 
   private Map<String, Object> status(String status, String probe) {
     return Map.of(
-        "service", "enterprise-erp",
-        "probe", probe,
-        "status", status,
-        "timestamp", Instant.now().toString());
+        "service",
+        "enterprise-erp",
+        "probe",
+        probe,
+        "status",
+        status,
+        "timestamp",
+        Instant.now().toString());
   }
 }

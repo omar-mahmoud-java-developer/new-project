@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2026 Enterprise ERP
+ */
 package com.enterprise.erp.config;
 
 import org.springframework.context.annotation.Bean;
@@ -16,11 +19,13 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
         .cors(Customizer.withDefaults())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/api/health", "/api/ready", "/actuator/health", "/actuator/info")
+                    .requestMatchers(
+                        "/api/health", "/api/ready", "/actuator/health", "/actuator/info")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

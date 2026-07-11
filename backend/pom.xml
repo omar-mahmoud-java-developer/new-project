@@ -163,9 +163,10 @@
             <googleJavaFormat/>
             <removeUnusedImports/>
             <licenseHeader>
-              <![CDATA[/*
+              <content><![CDATA[/*
  * Copyright (c) 2026 Enterprise ERP
- */]]>
+ */
+]]></content>
             </licenseHeader>
           </java>
         </configuration>
