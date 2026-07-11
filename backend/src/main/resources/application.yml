@@ -33,6 +33,15 @@ spring:
     username: ${SPRING_RABBITMQ_USERNAME:guest}
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
 
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-32chars-minimum}
+    access-token-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:15}
+    refresh-token-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
+  security:
+    cors:
+      allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
+
 server:
   port: 8080
   shutdown: graceful
