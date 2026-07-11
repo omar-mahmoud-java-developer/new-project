@@ -4,6 +4,10 @@ spring:
       ddl-auto: none
     show-sql: false
 
+app:
+  jwt:
+    secret: test-only-insecure-secret-change-me-32chars-minimum
+
 logging:
   level:
     root: WARN
