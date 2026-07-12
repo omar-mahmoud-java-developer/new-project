@@ -60,13 +60,31 @@
 ```yaml
 app:
   jwt:
-    secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-32chars-minimum}
+    secret: ${JWT_SECRET}
     access-token-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:15}
     refresh-token-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
   security:
     cors:
       allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
 ```
+
+**Security-corrected from the original draft of this step** (caught by automated review after this task first landed): `app.jwt.secret` has **no fallback** in the base config — an unset `JWT_SECRET` must fail application startup, not silently sign tokens with a well-known default (that would be a full auth-bypass: anyone could forge a valid token, including with a `SUPER_ADMIN` role claim). The dev-only fallback instead goes in `application-dev.yml` and `application-test.yml` (added in this same step):
+
+`backend/src/main/resources/application-dev.yml` gains:
+```yaml
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-32chars-minimum}
+```
+
+`backend/src/main/resources/application-test.yml` gains:
+```yaml
+app:
+  jwt:
+    secret: test-only-insecure-secret-change-me-32chars-minimum
+```
+
+Base `application.yml` already sets `spring.profiles.active: dev` by default, so local `mvnw spring-boot:run`/tests still work with zero setup; only a real deployment that explicitly activates a non-dev/test profile without setting `JWT_SECRET` will fail to start — which is the correct, fail-closed behavior.
 
 - [ ] **Step 3: Verify dependencies resolve**
 
