@@ -2267,12 +2267,14 @@ git commit -m "test: add AuthController slice tests, run full mvn verify green"
 
 - [ ] **Step 1: Bring up Postgres, Redis, RabbitMQ**
 
-Run: `cd "/home/omar/new project" && docker compose up -d postgres redis rabbitmq`
+Check for a port-5432 conflict first — this environment has been observed to have a native (non-Docker) Postgres already bound to `127.0.0.1:5432`, unrelated to this project: `ss -ltn | grep 5432 || true`. If something is already listening on 5432, set `POSTGRES_HOST_PORT` to an unused port (e.g. `5434`) for every command in this task — `docker-compose.yml`'s postgres service maps `${POSTGRES_HOST_PORT:-5432}:5432`, so `POSTGRES_HOST_PORT=5434 docker compose up -d postgres redis rabbitmq` works without editing the compose file. If 5432 is free, omit the env var and use the default.
+
+Run: `cd "/home/omar/new project" && [POSTGRES_HOST_PORT=5434] docker compose up -d postgres redis rabbitmq`
 Expected: three containers start; `docker compose ps` shows `postgres` as `healthy` within ~15s (poll with `docker compose ps postgres` if not immediately healthy, don't guess with a blind sleep).
 
-- [ ] **Step 2: Start the backend (this runs Flyway migrations automatically on boot per `spring.flyway.enabled: true`)**
+- [ ] **Step 2: Start the backend (this runs Flyway migrations automatically on boot per `spring.flyway.enabled: true`)** — if you used an alternate `POSTGRES_HOST_PORT` in Step 1, the backend (running locally via `mvnw`, not in Docker) needs `SPRING_DATASOURCE_URL` pointed at that same port, since its own default is hardcoded to 5432.
 
-Run (background, since it's a long-running server): `cd "/home/omar/new project/backend" && ./mvnw spring-boot:run > /tmp/backend-dev.log 2>&1 &` then poll `curl -sf http://localhost:8080/api/health` until it responds (up to 60s — first boot compiles and runs Flyway).
+Run (background, since it's a long-running server): `cd "/home/omar/new project/backend" && [SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5434/erp] JWT_SECRET=local-verification-secret-at-least-32-characters ./mvnw spring-boot:run > /tmp/backend-dev.log 2>&1 &` then poll `curl -sf http://localhost:8080/api/health` until it responds (up to 60s — first boot compiles and runs Flyway). Note `JWT_SECRET` must be set explicitly now (Task 1's security fix removed the insecure default from the base config — only `dev`/`test` profiles have a fallback, and `spring-boot:run` without an explicit `SPRING_PROFILES_ACTIVE` uses the base config's own `spring.profiles.active: dev` default, which DOES carry the dev fallback — so this env var is technically redundant with the dev profile default, but set it explicitly anyway for clarity and to keep this step correct even if profile defaults change later).
 Expected: `{"service":"enterprise-erp","probe":"health","status":"UP",...}`. If it fails, read `/tmp/backend-dev.log` for the actual error (most likely cause: a Flyway checksum/syntax issue in Task 2's SQL, or a bean-wiring issue from Task 5's `AuthenticationManager`/`UserDetailsService` — fix forward on this branch, don't skip this step).
 
 - [ ] **Step 3: Register the first user and confirm SUPER_ADMIN bootstrap**
@@ -3161,10 +3163,10 @@ git commit -m "feat(frontend): wire public/protected routing, silent-refresh boo
 
 **Interfaces:** none
 
-- [ ] **Step 1: Ensure backend + infra are running** (postgres/redis/rabbitmq from Task 12 should still be up; the backend was stopped at the end of Task 12)
+- [ ] **Step 1: Ensure backend + infra are running** (postgres/redis/rabbitmq from Task 12 should still be up; the backend was stopped at the end of Task 12) — use the same `POSTGRES_HOST_PORT`/`SPRING_DATASOURCE_URL`/`JWT_SECRET` overrides Task 12 Step 1/2 used, if it needed them for a port-5432 conflict in this environment.
 
-Run: `docker compose -f "/home/omar/new project/docker-compose.yml" ps postgres` — if not `healthy`, run `cd "/home/omar/new project" && docker compose up -d postgres redis rabbitmq` and wait for healthy.
-Run: `cd "/home/omar/new project/backend" && ./mvnw spring-boot:run > /tmp/backend-dev.log 2>&1 &` then poll `curl -sf http://localhost:8080/api/health` until it responds.
+Run: `docker compose -f "/home/omar/new project/docker-compose.yml" ps postgres` — if not `healthy`, run `cd "/home/omar/new project" && [POSTGRES_HOST_PORT=5434] docker compose up -d postgres redis rabbitmq` and wait for healthy.
+Run: `cd "/home/omar/new project/backend" && [SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5434/erp] JWT_SECRET=local-verification-secret-at-least-32-characters ./mvnw spring-boot:run > /tmp/backend-dev.log 2>&1 &` then poll `curl -sf http://localhost:8080/api/health` until it responds.
 
 - [ ] **Step 2: Start the frontend dev server**
 
